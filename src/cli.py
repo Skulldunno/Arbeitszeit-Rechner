@@ -1,12 +1,12 @@
 from zeitrechner import WorkTimeCaluclator
-REPLACABLE = [":",",",".","/"]
+REPLACABLE = [":",",",".","/","-"]
 
 class CLI:
     def __init__(self):
         pass
 
     def start_cli(self):
-        print("Willkommen zum Zeitrechner")
+        print("Willkommen zum Arbeitszeitrechner")
         print("Geben Sie 'exit' ein um das Programm zu beenden.")
         while True:
             arrival_time = self.input_time()
@@ -16,8 +16,7 @@ class CLI:
             if leave_time == None:
                 break
             flextime = WorkTimeCaluclator().calc_work_flextime(arrival_time, leave_time)
-            flextime = WorkTimeCaluclator().convert_to_time(flextime)
-            print(f"Deine Gleitzeit beträgt {flextime} Stunden.\n")
+            print(f"Deine Gleitzeit beträgt {flextime} Minuten.\n")
     
     def input_time(self):
         while True:
