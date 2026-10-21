@@ -3,25 +3,28 @@ REPLACABLE = [":",",",".","/","-"]
 
 class CLI:
     def __init__(self):
-        pass
+        self.calc = WorkTimeCaluclator()
 
     def start_cli(self):
         print("Willkommen zum Arbeitszeitrechner")
         print("Geben Sie 'exit' ein um das Programm zu beenden.")
         while True:
-            arrival_time = self.input_time()
+            arrival_time = self.calc.round_up_to_multiple_of_five(self.input_time(True))
             if arrival_time == None:
                 break
-            leave_time = self.input_time()
+            leave_time = self.calc.round_up_to_multiple_of_five(self.input_time(False))
             if leave_time == None:
                 break
-            flextime = WorkTimeCaluclator().calc_work_flextime(arrival_time, leave_time)
-            print(f"Deine Gleitzeit beträgt {flextime} Minuten.\n")
+            flextime = self.calc.calc_work_flextime(arrival_time, leave_time)
+            print(f"Deine Gleitzeit für Heute beträgt {flextime} Minuten.\n")
     
-    def input_time(self):
+    def input_time(self, arrive: False):
         while True:
             try:
-                time = input("Uhrzeit eingeben in HH:MM: ")
+                if arrive:
+                    time = input("Ankunftszeit eingeben in HH:MM: ")
+                else:
+                    time = input("Abreisezeit eingeben in HH:MM: ")
                 if time == "exit":
                     return print("BEENDEN")
                 for symbol in REPLACABLE:
@@ -42,7 +45,7 @@ class CLI:
             except:
                 print("Ungültige Uhrzeit eingegeben.\nAchten Sie darauf eine reale Uhrzeit.\nGültige Satzzeichen sind : , . /\n")
             else:
-                print(f"Deine Eingabe war {time} Uhr.\n")
+                print(f"Deine Eingabe war {time} Uhr.")
                 break     
         return time
 
