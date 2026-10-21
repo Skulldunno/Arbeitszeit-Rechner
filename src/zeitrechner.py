@@ -20,14 +20,19 @@ class WorkTimeCaluclator:
         return minutes
 
     def convert_to_time(self, minutes):
+        negativ = False
+        if minutes < 0:
+            minutes = -minutes
+            negativ = True
         hours = minutes // 60
         leftover_minutes = minutes - hours * 60
         time = [str(hours), str(leftover_minutes)]
         delimiter = ":"
         time = delimiter.join(time)
-        print(time)
+        if negativ:
+            time = "-" + time
         return time
     
 if __name__ == "__main__":
     print(WorkTimeCaluclator().calc_work_flextime("7:20", "16:15"))
-    print(WorkTimeCaluclator().convert_to_time(450))
+    print(WorkTimeCaluclator().convert_to_time(150))

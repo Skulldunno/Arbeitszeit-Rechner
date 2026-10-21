@@ -1,11 +1,13 @@
 # helloWorld("print")
+from cli import CLI
+
 
 class main:
     def __init__(self):
-        pass
+        self.cli = CLI()
 
     def start(self):
-        print("Start")
+        self.cli.start_cli()
 
 if __name__ == "__main__":
     App = main().start()
