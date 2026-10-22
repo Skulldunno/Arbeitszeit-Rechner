@@ -1,17 +1,25 @@
 REGULAR_ARRIVAL_TIME = "7:30"
 REGULAR_LEAVE_TIME = "16:15"
 REGULAR_FRIDAY_LEAVE_TIME =  "15:15"
-REGULAR_BREAKFAST = ["09:00", "09:20"]
+REGULAR_BREAKFAST = ["09:00", "09:15"]
 REGULAR_LUNCHTIME = ["12:30", "13:00"]
-REGULAR_SMALL_BREAK_EARLY = ["11:00", "11:10"]
-REGULAR_SMALL_BREAK_LATE = ["15:00", "15:10"]
 
 class WorkTimeCaluclator:
     def __init__(self):
         self.breakfast = REGULAR_BREAKFAST
         self.lunchtime = REGULAR_LUNCHTIME
-        self.small_break_early = REGULAR_SMALL_BREAK_EARLY
-        self.small_break_late = REGULAR_SMALL_BREAK_LATE
+        self.regular_working_hours = self.calc_working_hours(REGULAR_ARRIVAL_TIME, REGULAR_LEAVE_TIME, self.calc_break_time(self.breakfast, self.lunchtime))
+
+    def calc_break_time(self, breakfast, lunchtime):
+        breakfast_duration = self.get_break_duration(breakfast)
+        lunchtime_duration = self.get_break_duration(lunchtime)
+        return breakfast_duration + lunchtime_duration
+    
+    def calc_working_hours(self, arrival_time, leave_time, work_break):
+        arrival_time_in_minute = self.convert_to_minute(arrival_time)
+        leave_time_in_minute = self.convert_to_minute(leave_time)
+        working_hours = leave_time_in_minute - arrival_time_in_minute - work_break
+        return working_hours
 
     def get_break_duration(self, work_break):
         work_break_in_minute = []
@@ -20,9 +28,8 @@ class WorkTimeCaluclator:
         return work_break_in_minute[1] - work_break_in_minute[0]
 
     def calc_work_flextime(self, arrival_time, leave_time):
-        arrival_flextime = self.convert_to_minute(REGULAR_ARRIVAL_TIME) - self.convert_to_minute((arrival_time))
-        leave_flextime = self.convert_to_minute(REGULAR_LEAVE_TIME) - self.convert_to_minute(leave_time)
-        return arrival_flextime - leave_flextime
+        flextime = self.calc_working_hours(arrival_time, leave_time, self.calc_break_time(self.breakfast, self.lunchtime)) - self.regular_working_hours
+        return flextime
 
     def convert_to_minute(self, time):
         time = time.split(":")
@@ -46,20 +53,28 @@ class WorkTimeCaluclator:
             time = "-" + time
         return time
 
-    def round_up_to_multiple_of_five(self, time):
+    def round_up_to_multiple_of_five(self, time, arrive = True):
         time = time.split(":")
         minutes = list(time[1])
-        if int(minutes[-1]) == 0:
-            pass
-        elif int(minutes[-1]) < 5:
-            minutes[-1] = "5"
-        elif int(minutes[-1]) > 5:
-            minutes[0] = str(int(minutes[0]) + 1)
-            minutes[-1] = "0"
-            print(type(minutes[0]))
-            if int(minutes[0]) == 6:
-                time[0] = str(int(time[0]) + 1)
-                minutes[0] = "0"
+        if arrive:
+            if int(minutes[-1]) == 0:
+                pass
+            elif int(minutes[-1]) < 5:
+                minutes[-1] = "5"
+            elif int(minutes[-1]) > 5:
+                minutes[0] = str(int(minutes[0]) + 1)
+                minutes[-1] = "0"
+                print(type(minutes[0]))
+                if int(minutes[0]) == 6:
+                    time[0] = str(int(time[0]) + 1)
+                    minutes[0] = "0"
+        else:
+            if int(minutes[-1]) == 0:
+                pass
+            elif int(minutes[-1]) < 5:
+                minutes[-1] = "0"
+            elif int(minutes[-1]) > 5:
+                minutes[-1] = "5"
         delimiter = ""
         minutes = delimiter.join(minutes)
         delimiter = ":"
@@ -71,3 +86,5 @@ class WorkTimeCaluclator:
 if __name__ == "__main__":
     print(WorkTimeCaluclator().calc_work_flextime("7:20", "16:15"))
     print(WorkTimeCaluclator().convert_to_time(150))
+    print(WorkTimeCaluclator().get_break_duration(REGULAR_BREAKFAST))
+    print(WorkTimeCaluclator().calc_working_hours(REGULAR_ARRIVAL_TIME, REGULAR_LEAVE_TIME, WorkTimeCaluclator().calc_break_time(REGULAR_BREAKFAST, REGULAR_LUNCHTIME)))
