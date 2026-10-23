@@ -12,5 +12,8 @@ class Zeitnachweis:
         self.load_data()
 
     def load_data(self):
-        with open("zeitnachweis.json", "r", encoding="utf-8") as file:
-            self.daten = json.load(file)
+        try:
+            with open("zeitnachweis.json", "r", encoding="utf-8") as file:
+                self.daten = json.load(file)
+        except FileNotFoundError:
+            self.daten = {}
