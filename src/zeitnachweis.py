@@ -6,8 +6,9 @@ class Zeitnachweis:
         self.load_data()
 
     def save_data(self, data):
+        self.daten.update(data)
         with open("zeitnachweis.json", "w", encoding="utf-8") as file:
-            json.dump(data, file, indent=4)
+            json.dump(self.daten, file, indent=4)
         self.load_data()
 
     def load_data(self):

@@ -1,3 +1,4 @@
+from zeitnachweis import Zeitnachweis
 REGULAR_ARRIVAL_TIME = "7:30"
 REGULAR_LEAVE_TIME = "16:15"
 REGULAR_FRIDAY_LEAVE_TIME =  "15:15"
@@ -6,6 +7,7 @@ REGULAR_LUNCHTIME = ["12:30", "13:00"]
 
 class WorkTimeCaluclator:
     def __init__(self):
+        self.zeitnachweis = Zeitnachweis()
         self.breakfast = REGULAR_BREAKFAST
         self.lunchtime = REGULAR_LUNCHTIME
         self.regular_working_hours = self.calc_working_hours(REGULAR_ARRIVAL_TIME, REGULAR_LEAVE_TIME, self.calc_break_time(self.breakfast, self.lunchtime))

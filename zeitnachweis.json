@@ -1,0 +1,12 @@
+{
+    "2026-10-22": {
+        "arrival_time": "07:30",
+        "leave_time": "16:15",
+        "flextime": 0
+    },
+    "2026-10-23": {
+        "arrival_time": "07:30",
+        "leave_time": "16:15",
+        "flextime": -15
+    }
+}

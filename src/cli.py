@@ -1,3 +1,4 @@
+from datetime import datetime, date
 from zeitrechner import WorkTimeCaluclator
 REPLACABLE = [":",",",".","/","-"]
 
@@ -15,8 +16,9 @@ class CLI:
             print("1. Arbeitszeit berechnen")
             print("2. Frühstückspause ändern")
             print("3. Mittagspause ändern")
-            print("4. Beenden")
-            choice = input("Bitte wähle eine Option (1-4): ")
+            print("4. Gespeicherte Arbeitszeiten anzeigen")
+            print("5. Beenden")
+            choice = input("Bitte wähle eine Option (1-5): ")
             if choice == "1":
                 self.working_hours_input()
             elif choice == "2":
@@ -24,10 +26,26 @@ class CLI:
             elif choice == "3":
                 self.lunchtime_option()
             elif choice == "4":
+                self.show_saved_working_hours()
+            elif choice == "5":
                 print("Programm wird beendet.")
                 break
             else:
                 print("Ungültige Eingabe. Bitte wähle eine Option von 1 bis 4.")
+    
+    def show_saved_working_hours(self):
+        if not self.calc.zeitnachweis.daten:
+            print("Keine gespeicherten Arbeitszeiten vorhanden.")
+            return
+        print("Gespeicherte Arbeitszeiten:")
+        for date, data in self.calc.zeitnachweis.daten.items():
+            arrival_time = data.get("arrival_time", "N/A")
+            leave_time = data.get("leave_time", "N/A")
+            flextime = data.get("flextime", "N/A")
+            date_obj = datetime.strptime(date, "%Y-%m-%d").date()
+            print(f"Datum: {date} {date_obj.strftime("%a")}, Ankunftszeit: {arrival_time}, Abreisezeit: {leave_time}, Gleitzeit: {flextime} Minuten")
+        
+        input("\nReturn drücken zum Fortfahren\n")
     
     def breakfast_option(self):
         while True:
@@ -68,6 +86,34 @@ class CLI:
             leave_time = self.calc.round_up_to_multiple_of_five(leave_time, False)
         flextime = self.calc.calc_work_flextime(arrival_time, leave_time)
         print(f"Deine Gleitzeit für Heute beträgt {flextime} Minuten.\n")
+        print(f"Möchtest du die Arbeitszeit speichern? (y/n): ")
+        if input().lower() == "y":
+            date = self.date_input()
+            self.save_working_hours(arrival_time, leave_time, flextime, date)
+            print("Arbeitszeit erfolgreich gespeichert.")
+
+    def date_input(self):
+        while True:
+            date_input = input("Bitte gib ein Datum ein (YYYY-MM-DD) oder today: ")
+            if date_input.lower() == "today":
+                return date.today()
+            else:
+                try:
+                    valid_date = datetime.strptime(date_input, "%Y-%m-%d").date()
+                    print(valid_date)
+                    return valid_date
+                except ValueError:
+                    print("Ungültiges Datum. Bitte gib das Datum im Format YYYY-MM-DD ein.")
+        
+    def save_working_hours(self, arrival_time, leave_time, flextime, date):
+        data = {
+            str(date): {
+                "arrival_time": arrival_time,
+                "leave_time": leave_time,
+                "flextime": flextime
+            }
+        }
+        self.calc.zeitnachweis.save_data(data)
         
     def input_time(self, arrive: False):
         while True:
