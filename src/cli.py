@@ -66,10 +66,11 @@ class CLI:
                     self.calc.save_options()
                     break
                 elif option == "2":
-                    self.calc.reset_to_default_options()
+                    self.calc.breakfast = self.calc.load_default_option("breakfast")
                     break
                 else:
                     print("Ungültige Eingabe")
+                self.calc.save_options()
             elif breakfast_option.lower() == "n":
                 break
             else:
@@ -80,13 +81,24 @@ class CLI:
             print(f"Aktuelle Mittagspause von {self.calc.lunchtime[0]} Uhr bis {self.calc.lunchtime[1]} Uhr")
             lunchtime_option = input("Möchtest du die Mittagspause ändern? (y/n): ")
             if lunchtime_option.lower() == "y":
-                lunchtime_start = self.input_time(True)
-                lunchtime_end = self.input_time(False)
-                if not self.check_arrival_before_leave(lunchtime_start, lunchtime_end):
-                    input("Zum Fortfahren drücken.")
-                    continue
-                self.calc.lunchtime = [lunchtime_start, lunchtime_end]
-                break
+                print("Möchten Sie neue Uhrzeiten setzen oder Standardwerte zurückstetzen?")
+                print("1. neue Uhrzeiten setzen")
+                print("2. Standardwerte zurücksetzen")
+                option = input("Wählen Sie eine Option 1-2: ")
+                if option == "1":
+                    lunchtime_start = self.input_time(True)
+                    lunchtime_end = self.input_time(False)
+                    if not self.check_arrival_before_leave(lunchtime_start, lunchtime_end):
+                        input("Zum Fortfahren drücken.")
+                        continue
+                    self.calc.lunchtime = [lunchtime_start, lunchtime_end]
+                    break
+                elif option == "2":
+                    self.calc.lunchtime = self.calc.load_default_option("lunchtime")
+                    break
+                else:
+                    print("Ungültige Eingabe")
+                self.calc.save_options()
             elif lunchtime_option.lower() == "n":
                 break
             else:

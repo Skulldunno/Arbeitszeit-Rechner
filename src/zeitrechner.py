@@ -21,7 +21,6 @@ class WorkTimeCaluclator:
                     daten = daten[pause]
                 except KeyError:
                     return self.load_default_option(pause)
-                print(daten)
             return daten
         except FileNotFoundError:
             return self.load_default_option(pause)
