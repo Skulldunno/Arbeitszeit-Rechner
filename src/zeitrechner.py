@@ -43,7 +43,7 @@ class WorkTimeCaluclator:
     def reset_to_default_options(self):
         self.breakfast = REGULAR_BREAKFAST
         self.lunchtime = REGULAR_LUNCHTIME
-        self.save_options(self)
+        self.save_options()
         
     def save_options(self):
         daten = {
