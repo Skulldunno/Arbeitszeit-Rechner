@@ -1,3 +1,4 @@
+import json
 from zeitnachweis import Zeitnachweis
 REGULAR_ARRIVAL_TIME = "7:30"
 REGULAR_LEAVE_TIME = "16:15"
@@ -8,9 +9,49 @@ REGULAR_LUNCHTIME = ["12:30", "13:00"]
 class WorkTimeCaluclator:
     def __init__(self):
         self.zeitnachweis = Zeitnachweis()
+        self.breakfast = self.load_options("breakfast")
+        self.lunchtime = self.load_options("lunchtime")
+        self.regular_working_hours = self.calc_working_hours(REGULAR_ARRIVAL_TIME, REGULAR_LEAVE_TIME, self.calc_break_time(self.breakfast, self.lunchtime))
+
+    def load_options(self, pause):
+        try:
+            with open("options.json", "r", encoding="utf-8") as file:
+                daten = json.load(file)
+                try:
+                    daten = daten[pause]
+                except KeyError:
+                    return self.load_default_option(pause)
+                print(daten)
+            return daten
+        except FileNotFoundError:
+            return self.load_default_option(pause)
+    
+    def load_default_option(self, pause):
+        if pause == "breakfast":
+            daten = REGULAR_BREAKFAST
+        elif pause == "lunchtime":
+            daten = REGULAR_LUNCHTIME
+        elif pause == "all":
+            daten = {
+                "breakfast": ["09:00","09:20"],
+                "lunchtime": ["12:30","13:00"]
+            }
+        else:
+            Exception("Kein Gültiger Parameter")
+        return daten
+
+    def reset_to_default_options(self):
         self.breakfast = REGULAR_BREAKFAST
         self.lunchtime = REGULAR_LUNCHTIME
-        self.regular_working_hours = self.calc_working_hours(REGULAR_ARRIVAL_TIME, REGULAR_LEAVE_TIME, self.calc_break_time(self.breakfast, self.lunchtime))
+        self.save_options(self)
+        
+    def save_options(self):
+        daten = {
+            "breakfast": self.breakfast,
+            "lunchtime": self.lunchtime
+        }
+        with open("options.json", "w", encoding="utf-8") as file:
+            json.dump(daten, file, indent=4)
 
     def calc_break_time(self, breakfast, lunchtime):
         breakfast_duration = self.get_break_duration(breakfast)

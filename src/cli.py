@@ -45,16 +45,31 @@ class CLI:
             date_obj = datetime.strptime(date, "%Y-%m-%d").date()
             print(f"Datum: {date} {date_obj.strftime("%a")}, Ankunftszeit: {arrival_time}, Abreisezeit: {leave_time}, Gleitzeit: {flextime} Minuten")
         
-        input("\nReturn drücken zum Fortfahren\n")
-    
+        input("\nDrücken zum Fortfahren\n")
+
     def breakfast_option(self):
         while True:
+            print(f"Aktuelle Frühstückspause von {self.calc.breakfast[0]} Uhr bis {self.calc.breakfast[1]} Uhr")
             breakfast_option = input("Möchtest du die Frühstückspause ändern? (y/n): ")
             if breakfast_option.lower() == "y":
-                breakfast_start = self.input_time(True)
-                breakfast_end = self.input_time(False)
-                self.calc.breakfast = [breakfast_start, breakfast_end]
-                break
+                print("Möchten Sie neue Uhrzeiten setzen oder Standardwerte zurückstetzen?")
+                print("1. neue Uhrzeiten setzen")
+                print("2. Standardwerte zurücksetzen")
+                option = input("Wählen Sie eine Option 1-2: ")
+                if option == "1":
+                    breakfast_start = self.input_time(True)
+                    breakfast_end = self.input_time(False)
+                    if not self.check_arrival_before_leave(breakfast_start, breakfast_end):
+                        input("Zum Fortfahren drücken.")
+                        continue
+                    self.calc.breakfast = [breakfast_start, breakfast_end]
+                    self.calc.save_options()
+                    break
+                elif option == "2":
+                    self.calc.reset_to_default_options()
+                    break
+                else:
+                    print("Ungültige Eingabe")
             elif breakfast_option.lower() == "n":
                 break
             else:
@@ -62,10 +77,14 @@ class CLI:
 
     def lunchtime_option(self):
         while True:
+            print(f"Aktuelle Mittagspause von {self.calc.lunchtime[0]} Uhr bis {self.calc.lunchtime[1]} Uhr")
             lunchtime_option = input("Möchtest du die Mittagspause ändern? (y/n): ")
             if lunchtime_option.lower() == "y":
                 lunchtime_start = self.input_time(True)
                 lunchtime_end = self.input_time(False)
+                if not self.check_arrival_before_leave(lunchtime_start, lunchtime_end):
+                    input("Zum Fortfahren drücken.")
+                    continue
                 self.calc.lunchtime = [lunchtime_start, lunchtime_end]
                 break
             elif lunchtime_option.lower() == "n":
@@ -82,6 +101,9 @@ class CLI:
         leave_time = self.input_time(False)
         if leave_time == None:
             return None
+        elif not self.check_arrival_before_leave(arrival_time, leave_time):
+            input("Zum Fortfahren drücken.")
+            return None
         else:
             leave_time = self.calc.round_up_to_multiple_of_five(leave_time, False)
         flextime = self.calc.calc_work_flextime(arrival_time, leave_time)
@@ -91,6 +113,14 @@ class CLI:
             date = self.date_input()
             self.save_working_hours(arrival_time, leave_time, flextime, date)
             print("Arbeitszeit erfolgreich gespeichert.")
+
+    def check_arrival_before_leave(self, arrival_time, leave_time):
+        arrival_time_in_minute = self.calc.convert_to_minute(arrival_time)
+        leave_time_in_minute = self.calc.convert_to_minute(leave_time)
+        if arrival_time_in_minute >= leave_time_in_minute:
+            print("Die Ankunftszeit darf nicht nach der Abreisezeit liegen. Bitte überprüfe deine Eingaben.")
+            return False
+        return True
 
     def date_input(self):
         while True:
