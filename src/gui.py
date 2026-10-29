@@ -8,6 +8,7 @@ class GUI:
         #self.calc = WorkTimeCaluclator()
         self.root = tk.Tk()
         self.root.title("Arbeitszeitrechner")
+        self.root.resizable(False, False)
         make_corners_square(self.root)
         self.menu = tk.Menu(self.root)
         self.root.config(menu=self.menu)
@@ -63,20 +64,7 @@ class CalcFrame(tk.Frame):
         # Output Label
         self.output = tk.Text(master=self, height=3, width=40, wrap="word")
         self.output.grid(row=3, column=0, columnspan=2, pady=10)
-        self.output.insert("1.0",
-                           """
-                           Lorem ipsum dolor sit amet, consetetur sadipscing elitr, 
-                           sed diam nonumy eirmod tempor invidunt ut labore et dolore 
-                           magna aliquyam erat, sed diam voluptua. At vero eos et 
-                           accusam et justo duo dolores et ea rebum. Stet clita kasd 
-                           gubergren, no sea takimata sanctus est Lorem ipsum dolor 
-                           sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing 
-                           elitr, sed diam nonumy eirmod tempor invidunt ut labore et 
-                           dolore magna aliquyam erat, sed diam voluptua. At vero eos et 
-                           accusam et justo duo dolores et ea rebum. Stet clita kasd 
-                           gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
-                           """
-                           )
+        self.output.insert("1.0","Lorem ipsum")
         self.output.config(state="disabled")
 
         # Button to start Calculation
