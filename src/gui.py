@@ -12,9 +12,9 @@ class GUI:
         self.menu.add_command(label="Rechner", command=lambda: self.show_frame("rechner"))
         self.menu.add_command(label="Options", command=lambda: self.show_frame("options"))
         self.menu.add_command(label="Übersicht", command=lambda: self.show_frame("übersicht"))
-        self.frame1 = tk.Frame(master=self.root, bg="blue", height=10, width=10)
-        self.frame2 = tk.Frame(master=self.root, bg="red", height=10, width=10)
-        self.frame3 = tk.Frame(master=self.root, bg="black", height=10, width=10)
+        self.frame1 = CalcFrame(master=self.root, bg="blue", height=10, width=10)
+        self.frame2 = OptionFrame(master=self.root, bg="red", height=10, width=10)
+        self.frame3 = OverviewFrame(master=self.root, bg="black", height=10, width=10)
         self.frames = {
             "rechner": self.frame1, 
             "options": self.frame2, 
@@ -30,6 +30,18 @@ class GUI:
         self.frames[self.currentframe].grid_forget()
         self.currentframe = frame_name
         self.frames[self.currentframe].grid(row=0, column=0)
+
+class CalcFrame(tk.Frame):
+    def __init__(self, master ,**options):
+        super().__init__(master,**options)
+
+class OptionFrame(tk.Frame):
+    def __init__(self, master ,**options):
+        super().__init__(master,**options)
+
+class OverviewFrame(tk.Frame):
+    def __init__(self, master ,**options):
+        super().__init__(master,**options)
 
 if __name__ == "__main__":
     gui = GUI()
