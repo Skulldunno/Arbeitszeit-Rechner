@@ -7,7 +7,11 @@ class GUI:
         self.calc = WorkTimeCaluclator()
         self.root = tk.Tk()
         self.root.title("Arbeitszeitrechner")
-        self.root.minsize(300, 300)
+        self.menu = tk.Menu(self.root)
+        self.root.config(menu=self.menu)
+        self.menu.add_command(label="Rechner", command=lambda: self.show_frame("rechner"))
+        self.menu.add_command(label="Options", command=lambda: self.show_frame("options"))
+        self.menu.add_command(label="Übersicht", command=lambda: self.show_frame("übersicht"))
         self.frame1 = tk.Frame(master=self.root, bg="blue", height=10, width=10)
         self.frame2 = tk.Frame(master=self.root, bg="red", height=10, width=10)
         self.frame3 = tk.Frame(master=self.root, bg="black", height=10, width=10)
@@ -19,19 +23,14 @@ class GUI:
         self.currentframe = "rechner"
 
     def start(self):
-        self.menu = tk.Menu(self.root)
-        self.root.config(menu=self.menu)
         self.show_frame(self.currentframe)
-        self.menu.add_command(label="Rechner", command=lambda: self.show_frame("rechner"))
-        self.menu.add_command(label="Options", command=lambda: self.show_frame("options"))
-        self.menu.add_command(label="Übersicht", command=lambda: self.show_frame("übersicht"))
         self.root.mainloop()
 
     def show_frame(self, frame_name):
         self.frames[self.currentframe].grid_forget()
         self.currentframe = frame_name
         self.frames[self.currentframe].grid(row=0, column=0)
-        
+
 if __name__ == "__main__":
     gui = GUI()
     gui.start()
