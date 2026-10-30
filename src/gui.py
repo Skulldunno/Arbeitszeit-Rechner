@@ -12,18 +12,18 @@ class GUI:
         make_corners_square(self.root)
         self.menu = tk.Menu(self.root)
         self.root.config(menu=self.menu)
-        self.menu.add_command(label="Rechner", command=lambda: self.show_frame("rechner"))
+        self.menu.add_command(label="Rechner", command=lambda: self.show_frame("calc"))
         self.menu.add_command(label="Options", command=lambda: self.show_frame("options"))
-        self.menu.add_command(label="Übersicht", command=lambda: self.show_frame("übersicht"))
+        self.menu.add_command(label="Übersicht", command=lambda: self.show_frame("overview"))
         self.frame1 = CalcFrame(master=self.root)
         self.frame2 = OptionFrame(master=self.root)
-        self.frame3 = OverviewFrame(master=self.root, bg="black")
+        self.frame3 = OverviewFrame(master=self.root)
         self.frames = {
-            "rechner": self.frame1, 
+            "calc": self.frame1, 
             "options": self.frame2, 
-            "übersicht": self.frame3
+            "overview": self.frame3
             }
-        self.currentframe = "options"
+        self.currentframe = "overview"
 
     def start(self):
         self.show_frame(self.currentframe)
@@ -111,6 +111,58 @@ class OptionFrame(tk.Frame):
 class OverviewFrame(tk.Frame):
     def __init__(self, master ,**options):
         super().__init__(master,**options)
+
+        # Widgets to change week
+        self.week_frame = tk.Frame(master=self)
+        self.week_before_button = tk.Button(master=self.week_frame, text="<-", anchor="e", command=None)
+        self.week_before_button.grid(row=0, column=0, sticky="e")
+        self.week_label = tk.Label(master=self.week_frame, text=f"Kalenderwoche: Placeholder", relief="raised")
+        self.week_label.grid(row=0, column=1, sticky="nsew")
+        self.week_after_button = tk.Button(master=self.week_frame, text="->", anchor="w", command=None)
+        self.week_after_button.grid(row=0, column=2, sticky="w")
+        self.week_frame.grid(row=0, column=0, columnspan=5)
+
+        # Widgets to change year
+        self.year_frame = tk.Frame(master=self)
+        self.year_before_button = tk.Button(master=self.year_frame, text="<-", anchor="e", command=None)
+        self.year_before_button.grid(row=0, column=0, sticky="e")
+        self.year_label = tk.Label(master=self.year_frame, text=f"Jahr: Placeholder", relief="raised")
+        self.year_label.grid(row=0, column=1, sticky="nsew")
+        self.year_after_button = tk.Button(master=self.year_frame, text="->", anchor="w", command=None)
+        self.year_after_button.grid(row=0, column=2, sticky="w")
+        self.year_frame.grid(row=0, column=5, columnspan= 2)
+        
+        # table categories
+        self.begin_category_label = tk.Label(master=self, text="Beginn", bd=1, relief="solid")
+        self.begin_category_label.grid(row=1, column=0, sticky="ew")
+        self.breakfast_category_label = tk.Label(master=self, text="Frühstück", bd=1, relief="solid")
+        self.breakfast_category_label.grid(row=1, column=1, sticky="ew")
+        self.lunch_category_label = tk.Label(master=self, text="Mittag", bd=1, relief="solid")
+        self.lunch_category_label.grid(row=1, column=2, sticky="ew")
+        self.end_category_label = tk.Label(master=self, text="Ende", bd=1, relief="solid")
+        self.end_category_label.grid(row=1, column=3, sticky="ew")
+        self.flextime_category_label = tk.Label(master=self, text="Gleitzeit", bd=1, relief="solid")
+        self.flextime_category_label.grid(row=1, column=4, sticky="ew")
+        self.accumulativ_category_label = tk.Label(master=self, text="Kumulativ", bd=1, relief="solid")
+        self.accumulativ_category_label.grid(row=1, column=5, sticky="ew")
+        self.date_category_label = tk.Label(master=self, text="Datum", bd=1, relief="solid")
+        self.date_category_label.grid(row=1, column=6, sticky="ew")
+
+        # table monday
+        self.begin_monday_label = tk.Label(master=self, text="HH:MM", bd=1, relief="solid")
+        self.begin_monday_label.grid(row=2, column=0, sticky="ensw")
+        self.breakfast_monday_label = tk.Label(master=self, text="HH:MM\n-\nHH:MM", bd=1, relief="solid")
+        self.breakfast_monday_label.grid(row=2, column=1, sticky="nsew")
+        self.lunch_monday_label = tk.Label(master=self, text="HH:MM\n-\nHH:MM", bd=1, relief="solid")
+        self.lunch_monday_label.grid(row=2, column=2, sticky="nsew")
+        self.end_monday_label = tk.Label(master=self, text="HH:MM", bd=1, relief="solid")
+        self.end_monday_label.grid(row=2, column=3, sticky="nsew")
+        self.flextime_monday_label = tk.Label(master=self, text="0", bd=1, relief="solid")
+        self.flextime_monday_label.grid(row=2, column=4, sticky="nsew")
+        self.accumulativ_monday_label = tk.Label(master=self, text="0", bd=1, relief="solid")
+        self.accumulativ_monday_label.grid(row=2, column=5, sticky="nsew")
+        self.date_monday_label = tk.Label(master=self, text="Datum\nMontag", bd=1, relief="solid")
+        self.date_monday_label.grid(row=2, column=6, sticky="nsew")
 
 # erstellt von mister GPT um die ecken eckig zu machen
 def make_corners_square(root):
