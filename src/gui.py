@@ -16,14 +16,14 @@ class GUI:
         self.menu.add_command(label="Options", command=lambda: self.show_frame("options"))
         self.menu.add_command(label="Übersicht", command=lambda: self.show_frame("übersicht"))
         self.frame1 = CalcFrame(master=self.root)
-        self.frame2 = OptionFrame(master=self.root, bg="red")
+        self.frame2 = OptionFrame(master=self.root)
         self.frame3 = OverviewFrame(master=self.root, bg="black")
         self.frames = {
             "rechner": self.frame1, 
             "options": self.frame2, 
             "übersicht": self.frame3
             }
-        self.currentframe = "rechner"
+        self.currentframe = "options"
 
     def start(self):
         self.show_frame(self.currentframe)
@@ -78,6 +78,35 @@ class CalcFrame(tk.Frame):
 class OptionFrame(tk.Frame):
     def __init__(self, master ,**options):
         super().__init__(master,**options)
+
+        # 1.row
+        self.begin_label = tk.Label(master=self, text="Pausenbeginn")
+        self.begin_label.grid(row=0, column=1, sticky="ew")
+        self.end_label = tk.Label(master=self, text="Pausenende")
+        self.end_label.grid(row=0, column=2, sticky="ew")
+
+        # 2.row
+        self.breakfast_label = tk.Label(master=self, text="Frühstück", anchor="e")
+        self.breakfast_label.grid(row=1, column=0, sticky="ew")
+        self.breakfast_begin_entry = tk.Entry(master=self)
+        self.breakfast_begin_entry.grid(row=1, column=1, sticky="ew")
+        self.breakfast_end_entry = tk.Entry(master=self)
+        self.breakfast_end_entry.grid(row=1, column=2, sticky="ew")
+
+        # 3.row
+        self.lunch_label = tk.Label(master=self, text="Mittag", anchor="e")
+        self.lunch_label.grid(row=2, column=0, sticky="ew")
+        self.lunch_begin_entry = tk.Entry(master=self)
+        self.lunch_begin_entry.grid(row=2, column=1, sticky="ew")
+        self.lunch_end_entry = tk.Entry(master=self)
+        self.lunch_end_entry.grid(row=2, column=2, sticky="ew")
+
+        # Button to reset options
+        self.reset_button = tk.Button(master=self, text="Reset Default All", command=None)
+        self.reset_button.grid(row=3, column=0, sticky="w", pady=5, columnspan=2)
+        # Button to save options
+        self.save_button = tk.Button(master=self, text="Save", command=None)
+        self.save_button.grid(row=3, column=2, sticky="e", pady=5)
 
 class OverviewFrame(tk.Frame):
     def __init__(self, master ,**options):
