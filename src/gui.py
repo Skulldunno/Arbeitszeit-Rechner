@@ -44,93 +44,66 @@ class CalcFrame(tk.Frame):
         super().__init__(master,**options)
 
         # Date Input
-        self.date = tk.Label(master=self, text="Datum (YYYY.MM.DD):")
-        self.date.grid(row=0, column=0, stick="e")
-        self.date_entry = tk.Entry(master=self)
-        self.date_entry.grid(row=0, column=1, stick="we")
+        self.date = tk.Label(master=self, text="Datum (YYYY.MM.DD):").grid(row=0, column=0, stick="e")
+        self.date_entry = tk.Entry(master=self).grid(row=0, column=1, stick="we")
 
         # Beginn Input
-        self.begin = tk.Label(master=self, text="Anfang (HH:MM):")
-        self.begin.grid(row=1, column=0, stick="e")
-        self.begin_entry = tk.Entry(master=self)
-        self.begin_entry.grid(row=1, column=1, stick="we")
+        self.begin = tk.Label(master=self, text="Anfang (HH:MM):").grid(row=1, column=0, stick="e")
+        self.begin_entry = tk.Entry(master=self).grid(row=1, column=1, stick="we")
 
         # Beginn Input
-        self.end = tk.Label(master=self, text="Ende (HH:MM):")
-        self.end.grid(row=2, column=0, stick="e")
-        self.end_entry = tk.Entry(master=self)
-        self.end_entry.grid(row=2, column=1, stick="we")
+        self.end = tk.Label(master=self, text="Ende (HH:MM):").grid(row=2, column=0, stick="e")
+        self.end_entry = tk.Entry(master=self).grid(row=2, column=1, stick="we")
 
         # Output Label
-        self.output = tk.Text(master=self, height=3, width=40, wrap="word")
-        self.output.grid(row=3, column=0, columnspan=2, pady=10)
+        self.output = tk.Text(master=self, height=3, width=40, wrap="word").grid(row=3, column=0, columnspan=2, pady=10)
         self.output.insert("1.0","Lorem ipsum")
         self.output.config(state="disabled")
 
         # Button to start Calculation
-        self.calc_button = tk.Button(master=self, text="Ausrechnen", command=None)
-        self.calc_button.grid(row=4, column=0, sticky="w")
+        self.calc_button = tk.Button(master=self, text="Ausrechnen", command=None).grid(row=4, column=0, sticky="w")
 
         # Button to save results
-        self.save_button = tk.Button(master=self, text="Save", command=None)
-        self.save_button.grid(row=4, column=1, sticky="e")
+        self.save_button = tk.Button(master=self, text="Save", command=None).grid(row=4, column=1, sticky="e")
 
 class OptionFrame(tk.Frame):
     def __init__(self, master ,**options):
         super().__init__(master,**options)
 
         # 1.row
-        self.begin_label = tk.Label(master=self, text="Pausenbeginn")
-        self.begin_label.grid(row=0, column=1, sticky="ew")
-        self.end_label = tk.Label(master=self, text="Pausenende")
-        self.end_label.grid(row=0, column=2, sticky="ew")
+        self.begin_label = tk.Label(master=self, text="Pausenbeginn").grid(row=0, column=1, sticky="ew")
+        self.end_label = tk.Label(master=self, text="Pausenende").grid(row=0, column=2, sticky="ew")
 
         # 2.row
-        self.breakfast_label = tk.Label(master=self, text="Frühstück", anchor="e")
-        self.breakfast_label.grid(row=1, column=0, sticky="ew")
-        self.breakfast_begin_entry = tk.Entry(master=self)
-        self.breakfast_begin_entry.grid(row=1, column=1, sticky="ew")
-        self.breakfast_end_entry = tk.Entry(master=self)
-        self.breakfast_end_entry.grid(row=1, column=2, sticky="ew")
+        self.breakfast_label = tk.Label(master=self, text="Frühstück", anchor="e").grid(row=1, column=0, sticky="ew")
+        self.breakfast_begin_entry = tk.Entry(master=self).grid(row=1, column=1, sticky="ew")
+        self.breakfast_end_entry = tk.Entry(master=self).grid(row=1, column=2, sticky="ew")
 
         # 3.row
-        self.lunch_label = tk.Label(master=self, text="Mittag", anchor="e")
-        self.lunch_label.grid(row=2, column=0, sticky="ew")
-        self.lunch_begin_entry = tk.Entry(master=self)
-        self.lunch_begin_entry.grid(row=2, column=1, sticky="ew")
-        self.lunch_end_entry = tk.Entry(master=self)
-        self.lunch_end_entry.grid(row=2, column=2, sticky="ew")
+        self.lunch_label = tk.Label(master=self, text="Mittag", anchor="e").grid(row=2, column=0, sticky="ew")
+        self.lunch_begin_entry = tk.Entry(master=self).grid(row=2, column=1, sticky="ew")
+        self.lunch_end_entry = tk.Entry(master=self).grid(row=2, column=2, sticky="ew")
 
         # Button to reset options
-        self.reset_button = tk.Button(master=self, text="Reset Default All", command=None)
-        self.reset_button.grid(row=3, column=0, sticky="w", pady=5, columnspan=2)
+        self.reset_button = tk.Button(master=self, text="Reset Default All", command=None).grid(row=3, column=0, sticky="w", pady=5, columnspan=2)
         # Button to save options
-        self.save_button = tk.Button(master=self, text="Save", command=None)
-        self.save_button.grid(row=3, column=2, sticky="e", pady=5)
+        self.save_button = tk.Button(master=self, text="Save", command=None).grid(row=3, column=2, sticky="e", pady=5)
 
 class OverviewFrame(tk.Frame):
     def __init__(self, master ,**options):
         super().__init__(master,**options)
 
         # Widgets to change week 
-        self.week_frame = tk.Frame(master=self)
-        self.week_before_button = tk.Button(master=self.week_frame, text="<-", anchor="e", command=None)
-        self.week_before_button.grid(row=0, column=0, sticky="e")
-        self.week_label = tk.Label(master=self.week_frame, text=f"Kalenderwoche: Placeholder", relief="raised")
-        self.week_label.grid(row=0, column=1, sticky="nsew")
-        self.week_after_button = tk.Button(master=self.week_frame, text="->", anchor="w", command=None)
-        self.week_after_button.grid(row=0, column=2, sticky="w")
-        self.week_frame.grid(row=0, column=0, columnspan=5)
+        self.week_frame = tk.Frame(master=self).grid(row=0, column=0, columnspan=5)
+        self.week_before_button = tk.Button(master=self.week_frame, text="<-", anchor="e", command=None).grid(row=0, column=0, sticky="e")
+        self.week_label = tk.Label(master=self.week_frame, text=f"Kalenderwoche: Placeholder", relief="raised").grid(row=0, column=1, sticky="nsew")
+        self.week_after_button = tk.Button(master=self.week_frame, text="->", anchor="w", command=None).grid(row=0, column=2, sticky="w")
 
         # Widgets to change year
-        self.year_frame = tk.Frame(master=self)
-        self.year_before_button = tk.Button(master=self.year_frame, text="<-", anchor="e", command=None)
-        self.year_before_button.grid(row=0, column=0, sticky="e")
-        self.year_label = tk.Label(master=self.year_frame, text=f"Jahr: Placeholder", relief="raised")
-        self.year_label.grid(row=0, column=1, sticky="nsew")
-        self.year_after_button = tk.Button(master=self.year_frame, text="->", anchor="w", command=None)
-        self.year_after_button.grid(row=0, column=2, sticky="w")
-        self.year_frame.grid(row=0, column=5, columnspan= 2)
+        self.year_frame = tk.Frame(master=self).grid(row=0, column=5, columnspan= 2)
+        self.year_before_button = tk.Button(master=self.year_frame, text="<-", anchor="e", command=None).grid(row=0, column=0, sticky="e")
+        self.year_label = tk.Label(master=self.year_frame, text=f"Jahr: Placeholder", relief="raised").grid(row=0, column=1, sticky="nsew")
+        self.year_after_button = tk.Button(master=self.year_frame, text="->", anchor="w", command=None).grid(row=0, column=2, sticky="w")
         
         categories = ["Beginn", "Frühstück", "Mittag", "Ende", "Gleitzeit", "Kumulativ", "Datum"]
         self.categories_label = {
