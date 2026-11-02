@@ -112,7 +112,7 @@ class OverviewFrame(tk.Frame):
     def __init__(self, master ,**options):
         super().__init__(master,**options)
 
-        # Widgets to change week
+        # Widgets to change week 
         self.week_frame = tk.Frame(master=self)
         self.week_before_button = tk.Button(master=self.week_frame, text="<-", anchor="e", command=None)
         self.week_before_button.grid(row=0, column=0, sticky="e")
@@ -132,37 +132,21 @@ class OverviewFrame(tk.Frame):
         self.year_after_button.grid(row=0, column=2, sticky="w")
         self.year_frame.grid(row=0, column=5, columnspan= 2)
         
-        # table categories
-        self.begin_category_label = tk.Label(master=self, text="Beginn", bd=1, relief="solid")
-        self.begin_category_label.grid(row=1, column=0, sticky="ew")
-        self.breakfast_category_label = tk.Label(master=self, text="Frühstück", bd=1, relief="solid")
-        self.breakfast_category_label.grid(row=1, column=1, sticky="ew")
-        self.lunch_category_label = tk.Label(master=self, text="Mittag", bd=1, relief="solid")
-        self.lunch_category_label.grid(row=1, column=2, sticky="ew")
-        self.end_category_label = tk.Label(master=self, text="Ende", bd=1, relief="solid")
-        self.end_category_label.grid(row=1, column=3, sticky="ew")
-        self.flextime_category_label = tk.Label(master=self, text="Gleitzeit", bd=1, relief="solid")
-        self.flextime_category_label.grid(row=1, column=4, sticky="ew")
-        self.accumulativ_category_label = tk.Label(master=self, text="Kumulativ", bd=1, relief="solid")
-        self.accumulativ_category_label.grid(row=1, column=5, sticky="ew")
-        self.date_category_label = tk.Label(master=self, text="Datum", bd=1, relief="solid")
-        self.date_category_label.grid(row=1, column=6, sticky="ew")
-
-        # table monday
-        self.begin_monday_label = tk.Label(master=self, text="HH:MM", bd=1, relief="solid")
-        self.begin_monday_label.grid(row=2, column=0, sticky="ensw")
-        self.breakfast_monday_label = tk.Label(master=self, text="HH:MM\n-\nHH:MM", bd=1, relief="solid")
-        self.breakfast_monday_label.grid(row=2, column=1, sticky="nsew")
-        self.lunch_monday_label = tk.Label(master=self, text="HH:MM\n-\nHH:MM", bd=1, relief="solid")
-        self.lunch_monday_label.grid(row=2, column=2, sticky="nsew")
-        self.end_monday_label = tk.Label(master=self, text="HH:MM", bd=1, relief="solid")
-        self.end_monday_label.grid(row=2, column=3, sticky="nsew")
-        self.flextime_monday_label = tk.Label(master=self, text="0", bd=1, relief="solid")
-        self.flextime_monday_label.grid(row=2, column=4, sticky="nsew")
-        self.accumulativ_monday_label = tk.Label(master=self, text="0", bd=1, relief="solid")
-        self.accumulativ_monday_label.grid(row=2, column=5, sticky="nsew")
-        self.date_monday_label = tk.Label(master=self, text="Datum\nMontag", bd=1, relief="solid")
-        self.date_monday_label.grid(row=2, column=6, sticky="nsew")
+        categories = ["Beginn", "Frühstück", "Mittag", "Ende", "Gleitzeit", "Kumulativ", "Datum"]
+        self.categories_label = {
+            category: tk.Label(master=self, text=category, bd=1, relief="solid").grid(row=1, column=index, sticky="nsew") for index, category in enumerate(categories) 
+        }
+        days = ["monday", "tuesday", "wednesday", "thursday", "friday"]
+        for index, day in enumerate(days):
+            self.day_row = {
+                f"{day}_begin" : tk.Label(master=self, text=f"HH:MM", bd=1, relief="solid").grid(row=index +2, column=0, sticky="nsew"),
+                f"{day}_breakfast" : tk.Label(master=self, text=f"HH:MM\n-\nHH:MM", bd=1, relief="solid").grid(row=index +2, column=1, sticky="nsew"), 
+                f"{day}_lunch" : tk.Label(master=self, text=f"HH:MM\n-\nHH:MM", bd=1, relief="solid").grid(row=index +2, column=2, sticky="nsew"), 
+                f"{day}_end" : tk.Label(master=self, text=f"HH:MM", bd=1, relief="solid").grid(row=index +2, column=3, sticky="nsew"), 
+                f"{day}_flextime" : tk.Label(master=self, text=f"0", bd=1, relief="solid").grid(row=index +2, column=4, sticky="nsew"), 
+                f"{day}_accumulated" : tk.Label(master=self, text=f"0", bd=1, relief="solid").grid(row=index +2, column=5, sticky="nsew"), 
+                day : tk.Label(master=self, text=day, bd=1, relief="solid").grid(row=index +2, column=6, sticky="nsew")
+            }
 
 # erstellt von mister GPT um die ecken eckig zu machen
 def make_corners_square(root):
