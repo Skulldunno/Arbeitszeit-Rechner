@@ -43,6 +43,7 @@ class CalcFrame(tk.Frame):
     def __init__(self, master ,**options):
         super().__init__(master,**options)
 
+        self.master = master
         # Date Input
         self.date = tk.Label(master=self, text="Datum (YYYY.MM.DD):").grid(row=0, column=0, stick="e")
         self.date_entry = tk.Entry(master=self).grid(row=0, column=1, stick="we")
@@ -56,10 +57,11 @@ class CalcFrame(tk.Frame):
         self.end_entry = tk.Entry(master=self).grid(row=2, column=1, stick="we")
 
         # Output Label
-        self.output = tk.Text(master=self, height=3, width=40, wrap="word").grid(row=3, column=0, columnspan=2, pady=10)
+        self.output = tk.Text(master=self, height=3, width=40, wrap="word")
         self.output.insert("1.0","Lorem ipsum")
         self.output.config(state="disabled")
-
+        self.output.grid(row=3, column=0, columnspan=2, pady=10)
+        
         # Button to start Calculation
         self.calc_button = tk.Button(master=self, text="Ausrechnen", command=None).grid(row=4, column=0, sticky="w")
 
@@ -94,16 +96,17 @@ class OverviewFrame(tk.Frame):
         super().__init__(master,**options)
 
         # Widgets to change week 
-        self.week_frame = tk.Frame(master=self).grid(row=0, column=0, columnspan=5)
+        self.week_frame = tk.Frame(master=self)
         self.week_before_button = tk.Button(master=self.week_frame, text="<-", anchor="e", command=None).grid(row=0, column=0, sticky="e")
         self.week_label = tk.Label(master=self.week_frame, text=f"Kalenderwoche: Placeholder", relief="raised").grid(row=0, column=1, sticky="nsew")
         self.week_after_button = tk.Button(master=self.week_frame, text="->", anchor="w", command=None).grid(row=0, column=2, sticky="w")
-
+        self.week_frame.grid(row=0, column=0, columnspan=5)
         # Widgets to change year
-        self.year_frame = tk.Frame(master=self).grid(row=0, column=5, columnspan= 2)
+        self.year_frame = tk.Frame(master=self)
         self.year_before_button = tk.Button(master=self.year_frame, text="<-", anchor="e", command=None).grid(row=0, column=0, sticky="e")
         self.year_label = tk.Label(master=self.year_frame, text=f"Jahr: Placeholder", relief="raised").grid(row=0, column=1, sticky="nsew")
         self.year_after_button = tk.Button(master=self.year_frame, text="->", anchor="w", command=None).grid(row=0, column=2, sticky="w")
+        self.year_frame.grid(row=0, column=5, columnspan= 2)
         
         categories = ["Beginn", "Frühstück", "Mittag", "Ende", "Gleitzeit", "Kumulativ", "Datum"]
         self.categories_label = {
