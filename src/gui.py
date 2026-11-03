@@ -1,11 +1,11 @@
-#from zeitrechner import WorkTimeCaluclator
+from zeitrechner import WorkTimeCaluclator
 import tkinter as tk
 from tkinter import ttk
 import ctypes
 
 class GUI:
     def __init__(self):
-        #self.calc = WorkTimeCaluclator()
+        self.calc = WorkTimeCaluclator()
         self.root = tk.Tk()
         self.root.title("Arbeitszeitrechner")
         self.root.resizable(False, False)
@@ -15,7 +15,7 @@ class GUI:
         self.menu.add_command(label="Rechner", command=lambda: self.show_frame("calc"))
         self.menu.add_command(label="Options", command=lambda: self.show_frame("options"))
         self.menu.add_command(label="Übersicht", command=lambda: self.show_frame("overview"))
-        self.frame1 = CalcFrame(master=self.root)
+        self.frame1 = CalcFrame(master=self.root, worktime_calculator=self.calc)
         self.frame2 = OptionFrame(master=self.root)
         self.frame3 = OverviewFrame(master=self.root)
         self.frames = {
@@ -23,7 +23,7 @@ class GUI:
             "options": self.frame2, 
             "overview": self.frame3
             }
-        self.currentframe = "overview"
+        self.currentframe = "calc"
 
     def start(self):
         self.show_frame(self.currentframe)
@@ -40,9 +40,9 @@ class GUI:
         self.root.geometry(f"{width}x{height}")
 
 class CalcFrame(tk.Frame):
-    def __init__(self, master ,**options):
+    def __init__(self, master, worktime_calculator, **options):
         super().__init__(master,**options)
-
+        self.calc = worktime_calculator
         self.master = master
         # Date Input
         self.date = tk.Label(master=self, text="Datum (YYYY.MM.DD):").grid(row=0, column=0, stick="e")
@@ -50,11 +50,13 @@ class CalcFrame(tk.Frame):
 
         # Beginn Input
         self.begin = tk.Label(master=self, text="Anfang (HH:MM):").grid(row=1, column=0, stick="e")
-        self.begin_entry = tk.Entry(master=self).grid(row=1, column=1, stick="we")
+        self.begin_entry = tk.Entry(master=self)
+        self.begin_entry.grid(row=1, column=1, stick="we")
 
         # Beginn Input
         self.end = tk.Label(master=self, text="Ende (HH:MM):").grid(row=2, column=0, stick="e")
-        self.end_entry = tk.Entry(master=self).grid(row=2, column=1, stick="we")
+        self.end_entry = tk.Entry(master=self)
+        self.end_entry.grid(row=2, column=1, stick="we")
 
         # Output Label
         self.output = tk.Text(master=self, height=3, width=40, wrap="word")
@@ -63,10 +65,34 @@ class CalcFrame(tk.Frame):
         self.output.grid(row=3, column=0, columnspan=2, pady=10)
         
         # Button to start Calculation
-        self.calc_button = tk.Button(master=self, text="Ausrechnen", command=None).grid(row=4, column=0, sticky="w")
+        self.calc_button = tk.Button(master=self, text="Ausrechnen", command=self.calculate_working_hours).grid(row=4, column=0, sticky="w")
 
         # Button to save results
         self.save_button = tk.Button(master=self, text="Save", command=None).grid(row=4, column=1, sticky="e")
+
+    def calculate_working_hours(self):
+        begin = self.begin_entry.get().strip()
+        end = self.end_entry.get().strip()
+        if not begin == "" or not end == "":
+            self.set_output_text(str(self.calc.calc_work_flextime(begin, end)))
+        self.empty_input_error()
+
+    def set_output_text(self, text:str):
+        self.output.config(state="normal")
+        self.output.delete("1.0", tk.END)
+        self.output.config(fg="black")
+        self.output.insert("1.0", text)
+        self.output.config(state="disabled")
+
+    def empty_input_error(self):
+        self.output.config(state="normal")
+        self.output.delete("1.0", tk.END)
+        self.output.config(fg="red")
+        self.output.insert("1.0","Ein oder mehrere Felder wurden nicht ausgefüllt!")
+        self.output.config(state="disabled")
+
+    def check_input_format(self, input):
+        pass
 
 class OptionFrame(tk.Frame):
     def __init__(self, master ,**options):
