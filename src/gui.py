@@ -44,19 +44,21 @@ class CalcFrame(tk.Frame):
         super().__init__(master,**options)
         self.calc = worktime_calculator
         self.master = master
-        v_cmd = self.register(self.check_input_format)
+        #date_cmd = self.register(self.date_entry.check_input_format)
+
         # Date Input
         self.date = tk.Label(master=self, text="Datum (YYYY.MM.DD):").grid(row=0, column=0, stick="e")
-        self.date_entry = tk.Entry(master=self).grid(row=0, column=1, stick="we")
+        self.date_entry = DateEntry(master=self)#, validate="key", validatecommand=(date_cmd, "%P"))
+        self.date_entry.grid(row=0, column=1, stick="we")
 
         # Beginn Input
         self.begin = tk.Label(master=self, text="Anfang (HH:MM):").grid(row=1, column=0, stick="e")
-        self.begin_entry = tk.Entry(master=self, validate="key", validatecommand=(v_cmd, "%P"))
+        self.begin_entry = TimeEntry(master=self)
         self.begin_entry.grid(row=1, column=1, stick="we")
 
         # Beginn Input
         self.end = tk.Label(master=self, text="Ende (HH:MM):").grid(row=2, column=0, stick="e")
-        self.end_entry = tk.Entry(master=self, validate="key", validatecommand=(v_cmd, "%P"))
+        self.end_entry = TimeEntry(master=self)
         self.end_entry.grid(row=2, column=1, stick="we")
 
         # Output Label
@@ -109,6 +111,12 @@ class CalcFrame(tk.Frame):
         self.output.insert("1.0","Die Abreisezeit kann nicht vor der Ankunftszeit sein!")
         self.output.config(state="disabled")
 
+class TimeEntry(tk.Entry):
+    def __ini__(self, master, **options):
+        super().__init__(master, **options)
+        time_cmd = self.register(self.check_input_format)
+        self.configure(validate="key", validatecommand=(time_cmd, "%P"))
+
     def check_input_format(self, input):
         allowed_characters = "0123456789:"
         special_characters = ":"
@@ -150,6 +158,13 @@ class CalcFrame(tk.Frame):
                 return False
     
         return True
+
+class DateEntry(tk.Entry):
+    def __init__(self, master, **options):
+        super().__init__(master, **options)
+
+    def check_input_format(self, input):
+        pass
 
 class OptionFrame(tk.Frame):
     def __init__(self, master ,**options):
