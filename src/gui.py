@@ -44,18 +44,19 @@ class CalcFrame(tk.Frame):
         super().__init__(master,**options)
         self.calc = worktime_calculator
         self.master = master
+        v_cmd = self.register(self.check_input_format)
         # Date Input
         self.date = tk.Label(master=self, text="Datum (YYYY.MM.DD):").grid(row=0, column=0, stick="e")
         self.date_entry = tk.Entry(master=self).grid(row=0, column=1, stick="we")
 
         # Beginn Input
         self.begin = tk.Label(master=self, text="Anfang (HH:MM):").grid(row=1, column=0, stick="e")
-        self.begin_entry = tk.Entry(master=self)
+        self.begin_entry = tk.Entry(master=self, validate="key", validatecommand=(v_cmd, "%P"))
         self.begin_entry.grid(row=1, column=1, stick="we")
 
         # Beginn Input
         self.end = tk.Label(master=self, text="Ende (HH:MM):").grid(row=2, column=0, stick="e")
-        self.end_entry = tk.Entry(master=self)
+        self.end_entry = tk.Entry(master=self, validate="key", validatecommand=(v_cmd, "%P"))
         self.end_entry.grid(row=2, column=1, stick="we")
 
         # Output Label
@@ -73,9 +74,19 @@ class CalcFrame(tk.Frame):
     def calculate_working_hours(self):
         begin = self.begin_entry.get().strip()
         end = self.end_entry.get().strip()
-        if not begin == "" or not end == "":
-            self.set_output_text(str(self.calc.calc_work_flextime(begin, end)))
-        self.empty_input_error()
+        if begin == "" or end == "":
+            self.empty_input_error()
+            return
+        try:
+            begin = self.calc.round_up_to_multiple_of_five(begin)
+            end = self.calc.round_up_to_multiple_of_five(end, False)
+        except IndexError:
+            self.empty_input_error()
+            return
+        if self.calc.convert_to_minute(begin) > self.calc.convert_to_minute(end):
+            self.chronologic_input_error()
+            return
+        self.set_output_text(str(self.calc.calc_work_flextime(begin, end)))
 
     def set_output_text(self, text:str):
         self.output.config(state="normal")
@@ -91,8 +102,54 @@ class CalcFrame(tk.Frame):
         self.output.insert("1.0","Ein oder mehrere Felder wurden nicht ausgefüllt!")
         self.output.config(state="disabled")
 
+    def chronologic_input_error(self):
+        self.output.config(state="normal")
+        self.output.delete("1.0", tk.END)
+        self.output.config(fg="red")
+        self.output.insert("1.0","Die Abreisezeit kann nicht vor der Ankunftszeit sein!")
+        self.output.config(state="disabled")
+
     def check_input_format(self, input):
-        pass
+        allowed_characters = "0123456789:"
+        special_characters = ":"
+
+        if input =="":
+            return True
+
+        if not all(char in allowed_characters for char in input):
+            return False
+
+        if input[0] in special_characters:
+            return False
+         
+        special_chars_in_input = [char for char in input if char in special_characters]
+
+        if len(special_chars_in_input) > 1:
+            return False
+        elif len(special_chars_in_input) == 1:
+            split_char = special_chars_in_input[0]
+
+            time = input.split(split_char)
+            hours = time[0]
+            minutes = time[1]
+
+            if len(hours) > 2 or len(minutes) > 2:
+                return False
+
+            if int(hours) > 23:
+                return False
+
+            if len(minutes) > 0:
+                if int(minutes) > 59:
+                    return False
+            
+        elif len(input) > 0:
+            if int(input) > 23:
+                return False
+            if len(input) > 2:
+                return False
+    
+        return True
 
 class OptionFrame(tk.Frame):
     def __init__(self, master ,**options):

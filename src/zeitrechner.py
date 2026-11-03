@@ -106,7 +106,6 @@ class WorkTimeCaluclator:
             elif int(minutes[-1]) > 5:
                 minutes[0] = str(int(minutes[0]) + 1)
                 minutes[-1] = "0"
-                print(type(minutes[0]))
                 if int(minutes[0]) == 6:
                     time[0] = str(int(time[0]) + 1)
                     minutes[0] = "0"
