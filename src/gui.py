@@ -1,3 +1,4 @@
+from calendar import monthrange
 from zeitrechner import WorkTimeCaluclator
 import tkinter as tk
 from tkinter import ttk
@@ -44,11 +45,10 @@ class CalcFrame(tk.Frame):
         super().__init__(master,**options)
         self.calc = worktime_calculator
         self.master = master
-        #date_cmd = self.register(self.date_entry.check_input_format)
 
         # Date Input
-        self.date = tk.Label(master=self, text="Datum (YYYY.MM.DD):").grid(row=0, column=0, stick="e")
-        self.date_entry = DateEntry(master=self)#, validate="key", validatecommand=(date_cmd, "%P"))
+        self.date = tk.Label(master=self, text="Datum (jahr.monat.tag):").grid(row=0, column=0, stick="e")
+        self.date_entry = DateEntry(master=self)
         self.date_entry.grid(row=0, column=1, stick="we")
 
         # Beginn Input
@@ -76,7 +76,8 @@ class CalcFrame(tk.Frame):
     def calculate_working_hours(self):
         begin = self.begin_entry.get().strip()
         end = self.end_entry.get().strip()
-        if begin == "" or end == "":
+        date = self.date_entry.get().strip()
+        if begin == "" or end == "" or date =="":
             self.empty_input_error()
             return
         try:
@@ -101,7 +102,7 @@ class CalcFrame(tk.Frame):
         self.output.config(state="normal")
         self.output.delete("1.0", tk.END)
         self.output.config(fg="red")
-        self.output.insert("1.0","Ein oder mehrere Felder wurden nicht ausgefüllt!")
+        self.output.insert("1.0","Ein oder mehrere Felder sind unvollständig!")
         self.output.config(state="disabled")
 
     def chronologic_input_error(self):
@@ -112,60 +113,121 @@ class CalcFrame(tk.Frame):
         self.output.config(state="disabled")
 
 class TimeEntry(tk.Entry):
-    def __ini__(self, master, **options):
+    def __init__(self, master, **options):
         super().__init__(master, **options)
-        time_cmd = self.register(self.check_input_format)
-        self.configure(validate="key", validatecommand=(time_cmd, "%P"))
+        v_cmd = self.register(self.check_input_format)
+        self.configure(validate="key", validatecommand=(v_cmd, "%P"))
 
     def check_input_format(self, input):
         allowed_characters = "0123456789:"
         special_characters = ":"
 
-        if input =="":
+        if input =="":  #allow emptying entry
             return True
 
-        if not all(char in allowed_characters for char in input):
+        if not all(char in allowed_characters for char in input):   #allow new string when all characters are allowed
             return False
 
-        if input[0] in special_characters:
+        if input[0] in special_characters:  #first character of the new string can not be a special character
             return False
          
-        special_chars_in_input = [char for char in input if char in special_characters]
+        special_chars_in_input = [char for char in input if char in special_characters] #note every special character in the new string
 
-        if len(special_chars_in_input) > 1:
+        if len(special_chars_in_input) > 1: # do not allow the new string if there is more than 1 special character
             return False
-        elif len(special_chars_in_input) == 1:
+        elif len(special_chars_in_input) == 1: # if there is exactly one special character
             split_char = special_chars_in_input[0]
 
-            time = input.split(split_char)
+            time = input.split(split_char) #split the new string at the special character
             hours = time[0]
             minutes = time[1]
 
-            if len(hours) > 2 or len(minutes) > 2:
+            if len(hours) > 2 or len(minutes) > 2: #if either hour or minutes string is too long do not allow the new string
                 return False
 
-            if int(hours) > 23:
+            if int(hours) > 23: # hours can not be above 23 decline the new string
                 return False
 
-            if len(minutes) > 0:
-                if int(minutes) > 59:
+            if len(minutes) > 0: #if there is a minute written
+                if int(minutes) > 59: # minutes can not be above 59 decline the new string
                     return False
             
-        elif len(input) > 0:
-            if int(input) > 23:
+        elif len(input) > 0: # if there is text in the input of the new string
+            if int(input) > 23: #check if the hours are not above 23; hours are the first thing to be input
                 return False
-            if len(input) > 2:
+            if len(input) > 2: #if hours are longer than 2 characters decline the new string
                 return False
-    
-        return True
 
+        return True #when all checks are passed allow the new string
+            
 class DateEntry(tk.Entry):
     def __init__(self, master, **options):
         super().__init__(master, **options)
+        v_cmd = self.register(self.check_input_format)
+        self.configure(validate="key", validatecommand=(v_cmd, "%P"))
 
     def check_input_format(self, input):
-        pass
+        allowed_characters = "0123456789."
+        special_characters = "."
 
+        if input =="":  #allow emptying entry
+            return True
+        
+        if not all(char in allowed_characters for char in input):   #only allowed characters can be entered
+            return False
+
+        if input[0] in special_characters:  #first character can not be a special character
+            return False
+
+        special_chars_in_input = {index:char for index, char in enumerate(input) if char in special_characters} #note every special character in the new string and its position in the new string
+
+        if len(special_chars_in_input) > 2: #if there are more than 2 special character decline the new string
+            return False
+
+        elif len(special_chars_in_input) == 1:  #if there is one special character split the new string at the special character
+            split_char = list(special_chars_in_input.values())[0]
+
+            date = input.split(split_char, 1)
+            year = date[0]
+            month = date[1]
+
+            if len(year) > 4 or len(month) > 2: #if the year is over 4 characters long or the month over 2 characters long decline the new string
+                return False
+
+            if len(month) > 0:  #if there is an input for month
+                if int(month) > 12 or int(month) < 1:   #check whether or not the month is a real month
+                    return False
+
+        elif len(special_chars_in_input) == 2:  #if there are two special character first check whether or not they are next to each other
+            position_of_chars = list(special_chars_in_input.keys())
+            if position_of_chars[0] +1 == position_of_chars[1]:
+                return False
+
+            split_char = list(special_chars_in_input.values())[0] #split the new string into first into two
+            date = input.split(split_char, 1)
+            year = date[0]
+            rest = date[1]
+            split_char = list(special_chars_in_input.values())[1] #split the rest into two more
+            rest = rest.split(split_char, 1)
+            month = rest[0]
+            day = rest[1]
+
+            if len(year) > 4 or len(month) > 2 or len(day) > 2: #if the year is over 4 characters long or the month over 2 characters long or the day over 2 characters long decline the new string
+                return False
+
+            if len(month) > 0:  #if there is an input for month
+                if int(month) > 12 or int(month) < 1:   #check whether or not the month is a real month
+                    return False
+
+            if len(day) > 0:
+                if int(day) > monthrange(int(year), int(month))[1] or int(day) < 1:
+                    return False
+
+        elif len(input) > 4:
+            return False
+            
+        return True #when all checks are passed allow the new string
+    
 class OptionFrame(tk.Frame):
     def __init__(self, master ,**options):
         super().__init__(master,**options)
