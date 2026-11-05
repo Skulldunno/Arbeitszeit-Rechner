@@ -3,6 +3,7 @@ from zeitrechner import WorkTimeCaluclator
 import tkinter as tk
 from tkinter import ttk
 import ctypes
+from datetime import datetime
 
 class GUI:
     def __init__(self):
@@ -89,13 +90,13 @@ class CalcFrame(tk.Frame):
         if self.calc.convert_to_minute(begin) > self.calc.convert_to_minute(end):
             self.chronologic_input_error()
             return
-        self.set_output_text(str(self.calc.calc_work_flextime(begin, end)))
+        self.set_output_text(str(self.calc.calc_work_flextime(begin, end)), date, datetime.strptime(date, "%Y.%m.%d").strftime("%A"))
 
-    def set_output_text(self, text:str):
+    def set_output_text(self, flextime:str, date:str, weekday):
         self.output.config(state="normal")
         self.output.delete("1.0", tk.END)
         self.output.config(fg="black")
-        self.output.insert("1.0", text)
+        self.output.insert("1.0", f"Deine Gleitzeit für den {date} {weekday} ist: {flextime} Minuten")
         self.output.config(state="disabled")
 
     def empty_input_error(self):
