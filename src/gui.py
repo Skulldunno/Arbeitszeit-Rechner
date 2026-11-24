@@ -123,6 +123,26 @@ class TimeEntry(tk.Entry):
         v_cmd = self.register(self.check_input_format)
         self.configure(validate="key", validatecommand=(v_cmd, "%P"))
 
+        self.placeholder = "Keine Eingabe"
+        self.placeholder_active = False
+
+        self.bind("<FocusIn>", self.remove_placeholder)
+        self.bind("<FocusOut>", self.show_placeholder)
+
+    def show_placeholder(self, event=None):
+        if self.get() == "":
+            self.configure(validate="none", foreground="red")
+            self.insert(0, self.placeholder)
+            self.configure(validate="key")
+            self.placeholder_active = True
+
+    def remove_placeholder(self, event=None):
+        if self.placeholder_active:
+            self.configure(validate="none", foreground="black")
+            self.delete(0, tk.END)
+            self.configure(validate="key")
+            self.placeholder_active = False
+
     def check_input_format(self, input):
         allowed_characters = "0123456789:"
         special_characters = ":"
@@ -262,29 +282,30 @@ class OptionFrame(tk.Frame):
         self.save_button = tk.Button(master=self, text="Save", command=self.save_options).grid(row=3, column=2, sticky="e", pady=5)
 
     def reset(self):
-        self.breakfast_begin_entry.delete(0, tk.END)
-        self.breakfast_begin_entry.insert(0, self.calc.breakfast[0])
-
-        self.breakfast_end_entry.delete(0, tk.END)
-        self.breakfast_end_entry.insert(0, self.calc.breakfast[1])
-
-        self.lunch_begin_entry.delete(0, tk.END)
-        self.lunch_begin_entry.insert(0, self.calc.lunchtime[0])
-
-        self.lunch_end_entry.delete(0, tk.END)
-        self.lunch_end_entry.insert(0, self.calc.lunchtime[1])
+        times = [
+            self.calc.breakfast[0],
+            self.calc.breakfast[1],
+            self.calc.lunchtime[0],
+            self.calc.lunchtime[1]
+            ]
+        i = 0
+        for widget in self.winfo_children():
+            if isinstance(widget, TimeEntry):
+                widget.remove_placeholder()
+                widget.delete(0, tk.END)
+                widget.insert(0, times[i])
+                i+=1
 
     def save_options(self):
-        if self.breakfast_begin_entry.get().strip() == "":
-            print("x")
-            self.empty_input_error(self.breakfast_begin_entry)
+        for widget in self.winfo_children():
+            if isinstance(widget, TimeEntry):
+                if widget.get().strip() == "":
+                    self.empty_input_error(widget)
         #breakfast = self.calc.convert_to_time(self.calc.convert_to_minute(self.breakfast_begin_entry.get().strip()))
 
     def empty_input_error(self, entry):
         entry.delete(0, tk.END)
-        print(type(entry))
-        self.breakfast_begin_entry.insert(0, "12:12")
-        print("z")
+        entry.show_placeholder()
     
 class OverviewFrame(tk.Frame):
     def __init__(self, master ,**options):
