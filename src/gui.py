@@ -18,7 +18,7 @@ class GUI:
         self.menu.add_command(label="Options", command=lambda: self.show_frame("options"))
         self.menu.add_command(label="Übersicht", command=lambda: self.show_frame("overview"))
         self.frame1 = CalcFrame(master=self.root, worktime_calculator=self.calc)
-        self.frame2 = OptionFrame(master=self.root)
+        self.frame2 = OptionFrame(master=self.root, calc=self.calc)
         self.frame3 = OverviewFrame(master=self.root)
         self.frames = {
             "calc": self.frame1, 
@@ -34,6 +34,7 @@ class GUI:
     def show_frame(self, frame_name):
         self.frames[self.currentframe].grid_forget()
         self.currentframe = frame_name
+        self.frames[self.currentframe].reset()
         self.frames[self.currentframe].grid(row=0, column=0, padx=5, pady=5)
 
         self.root.update_idletasks()
@@ -112,6 +113,9 @@ class CalcFrame(tk.Frame):
         self.output.config(fg="red")
         self.output.insert("1.0","Die Abreisezeit kann nicht vor der Ankunftszeit sein!")
         self.output.config(state="disabled")
+
+    def reset(self, *args):
+        pass
 
 class TimeEntry(tk.Entry):
     def __init__(self, master, **options):
@@ -230,8 +234,9 @@ class DateEntry(tk.Entry):
         return True #when all checks are passed allow the new string
     
 class OptionFrame(tk.Frame):
-    def __init__(self, master ,**options):
+    def __init__(self, master, calc ,**options):
         super().__init__(master,**options)
+        self.calc = calc
 
         # 1.row
         self.begin_label = tk.Label(master=self, text="Pausenbeginn").grid(row=0, column=1, sticky="ew")
@@ -239,19 +244,48 @@ class OptionFrame(tk.Frame):
 
         # 2.row
         self.breakfast_label = tk.Label(master=self, text="Frühstück", anchor="e").grid(row=1, column=0, sticky="ew")
-        self.breakfast_begin_entry = tk.Entry(master=self).grid(row=1, column=1, sticky="ew")
-        self.breakfast_end_entry = tk.Entry(master=self).grid(row=1, column=2, sticky="ew")
+        self.breakfast_begin_entry = TimeEntry(master=self)
+        self.breakfast_begin_entry.grid(row=1, column=1, sticky="ew")
+        self.breakfast_end_entry = TimeEntry(master=self)
+        self.breakfast_end_entry.grid(row=1, column=2, sticky="ew")
 
         # 3.row
         self.lunch_label = tk.Label(master=self, text="Mittag", anchor="e").grid(row=2, column=0, sticky="ew")
-        self.lunch_begin_entry = tk.Entry(master=self).grid(row=2, column=1, sticky="ew")
-        self.lunch_end_entry = tk.Entry(master=self).grid(row=2, column=2, sticky="ew")
+        self.lunch_begin_entry = TimeEntry(master=self)
+        self.lunch_begin_entry.grid(row=2, column=1, sticky="ew")
+        self.lunch_end_entry = TimeEntry(master=self)
+        self.lunch_end_entry.grid(row=2, column=2, sticky="ew")
 
         # Button to reset options
         self.reset_button = tk.Button(master=self, text="Reset Default All", command=None).grid(row=3, column=0, sticky="w", pady=5, columnspan=2)
         # Button to save options
-        self.save_button = tk.Button(master=self, text="Save", command=None).grid(row=3, column=2, sticky="e", pady=5)
+        self.save_button = tk.Button(master=self, text="Save", command=self.save_options).grid(row=3, column=2, sticky="e", pady=5)
 
+    def reset(self):
+        self.breakfast_begin_entry.delete(0, tk.END)
+        self.breakfast_begin_entry.insert(0, self.calc.breakfast[0])
+
+        self.breakfast_end_entry.delete(0, tk.END)
+        self.breakfast_end_entry.insert(0, self.calc.breakfast[1])
+
+        self.lunch_begin_entry.delete(0, tk.END)
+        self.lunch_begin_entry.insert(0, self.calc.lunchtime[0])
+
+        self.lunch_end_entry.delete(0, tk.END)
+        self.lunch_end_entry.insert(0, self.calc.lunchtime[1])
+
+    def save_options(self):
+        if self.breakfast_begin_entry.get().strip() == "":
+            print("x")
+            self.empty_input_error(self.breakfast_begin_entry)
+        #breakfast = self.calc.convert_to_time(self.calc.convert_to_minute(self.breakfast_begin_entry.get().strip()))
+
+    def empty_input_error(self, entry):
+        entry.delete(0, tk.END)
+        print(type(entry))
+        self.breakfast_begin_entry.insert(0, "12:12")
+        print("z")
+    
 class OverviewFrame(tk.Frame):
     def __init__(self, master ,**options):
         super().__init__(master,**options)
@@ -284,6 +318,8 @@ class OverviewFrame(tk.Frame):
                 f"{day}_accumulated" : tk.Label(master=self, text=f"0", bd=1, relief="solid").grid(row=index +2, column=5, sticky="nsew"), 
                 day : tk.Label(master=self, text=day, bd=1, relief="solid").grid(row=index +2, column=6, sticky="nsew")
             }
+    def reset(self, *args):
+        pass
 
 # erstellt von mister GPT um die ecken eckig zu machen
 def make_corners_square(root):

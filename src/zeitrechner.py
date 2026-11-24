@@ -87,8 +87,12 @@ class WorkTimeCaluclator:
             minutes = -minutes
             negativ = True
         hours = minutes // 60
+        if len(str(hours)) == 1:
+            str_hours = "0"+str(hours)
         leftover_minutes = minutes - hours * 60
-        time = [str(hours), str(leftover_minutes)]
+        if len(str(leftover_minutes)) == 1:
+            str_leftover_minutes = "0"+str(leftover_minutes)
+        time = [str_hours, str_leftover_minutes]
         delimiter = ":"
         time = delimiter.join(time)
         if negativ:
