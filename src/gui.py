@@ -308,7 +308,6 @@ class OptionFrame(tk.Frame):
 
     def save_options(self):
         entries = []
-        even = True
         for widget in self.winfo_children():
             if isinstance(widget, TimeEntry):
                 entries.append(widget)
@@ -316,12 +315,7 @@ class OptionFrame(tk.Frame):
             if widget.get().strip() == "":
                 self.empty_input_error(widget)
                 return
-            self.check_for_empty_input_error(widget, even)
-            if even:
-                even = False
-            else:
-                even = True
-        
+            self.check_for_empty_input_error(widget)
         for start, end in zip(entries, entries[1:]):
             try:
                 start_time = self.calc.convert_to_minute(start.get())
@@ -336,9 +330,9 @@ class OptionFrame(tk.Frame):
             if start_time > end_time:
                 self.chronologic_input_error(start)
             
-    def check_for_empty_input_error(self, entry, even):
+    def check_for_empty_input_error(self, entry):
         try:
-            output = self.calc.round_up_to_multiple_of_five(entry.get().strip(), even)
+            output = self.calc.round_up_to_multiple_of_five(entry.get().strip())
             entry.delete(0, tk.END)
             entry.insert_unvalidated(output)
         except IndexError:
