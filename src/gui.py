@@ -129,13 +129,12 @@ class TimeEntry(tk.Entry):
         v_cmd = self.register(self.check_input_format)
         self.configure(validate="key", validatecommand=(v_cmd, "%P"))
 
-        self.placeholder = "Falsche Eingabe"
         self.placeholder_active = False
-
         self.bind("<FocusIn>", self.remove_placeholder)
         self.bind("<FocusOut>", self.show_placeholder)
 
-    def show_placeholder(self, event=None):
+    def show_placeholder(self, event=None, text="Leere Eingabe"):
+        self.placeholder = text
         if self.get() == "":
             self.configure(validate="none", foreground="red")
             self.insert(0, self.placeholder)
@@ -313,24 +312,45 @@ class OptionFrame(tk.Frame):
         for widget in self.winfo_children():
             if isinstance(widget, TimeEntry):
                 entries.append(widget)
-        for index, widget in enumerate(entries):
+        for widget in entries:
             if widget.get().strip() == "":
                 self.empty_input_error(widget)
                 return
-            try:
-                output = self.calc.round_up_to_multiple_of_five(widget.get().strip(), even)
-                widget.delete(0, tk.END)
-                widget.insert_unvalidated(output)
-            except IndexError:
-                self.empty_input_error(widget) 
+            self.check_for_empty_input_error(widget, even)
             if even:
                 even = False
             else:
                 even = True
+        
+        for start, end in zip(entries, entries[1:]):
+            try:
+                start_time = self.calc.convert_to_minute(start.get())
+            except ValueError:
+                self.empty_input_error(start, text=start.get())
+                continue
+            try:
+                end_time = self.calc.convert_to_minute(end.get())
+            except ValueError:
+                self.empty_input_error(end, text=end.get())
+                continue
+            if start_time > end_time:
+                self.chronologic_input_error(start)
+            
+    def check_for_empty_input_error(self, entry, even):
+        try:
+            output = self.calc.round_up_to_multiple_of_five(entry.get().strip(), even)
+            entry.delete(0, tk.END)
+            entry.insert_unvalidated(output)
+        except IndexError:
+            self.empty_input_error(entry, text=entry.get())
 
-    def empty_input_error(self, entry):
+    def chronologic_input_error(self, entry):
+        entry.delete(0, tk.END)  
+        entry.show_placeholder(text="Unmögliche Pause")
+
+    def empty_input_error(self, entry, text):
         entry.delete(0, tk.END)
-        entry.show_placeholder()
+        entry.show_placeholder(text=text)
     
 class OverviewFrame(tk.Frame):
     def __init__(self, master ,**options):

@@ -74,12 +74,8 @@ class WorkTimeCaluclator:
         return flextime
 
     def convert_to_minute(self, time):
-        time = time.split(":")
-        for x in range(len(time)):
-            time[x] = int(time[x])
-        time[0] = time[0] * 60
-        minutes = int(time[0] + time[1])
-        return minutes
+        hours, minutes = map(int, time.split(":"))
+        return hours * 60 + minutes
 
     def convert_to_time(self, minutes):
         negativ = False
