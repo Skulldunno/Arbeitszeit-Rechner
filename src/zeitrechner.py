@@ -89,9 +89,13 @@ class WorkTimeCaluclator:
         hours = minutes // 60
         if len(str(hours)) == 1:
             str_hours = "0"+str(hours)
+        else:
+            str_hours = str(hours)
         leftover_minutes = minutes - hours * 60
         if len(str(leftover_minutes)) == 1:
             str_leftover_minutes = "0"+str(leftover_minutes)
+        else:
+            str_leftover_minutes = str(leftover_minutes)
         time = [str_hours, str_leftover_minutes]
         delimiter = ":"
         time = delimiter.join(time)
@@ -125,11 +129,9 @@ class WorkTimeCaluclator:
         delimiter = ":"
         time = [time[0],minutes]
         time = delimiter.join(time)
-        print(f"Notiert wurde {time}")
+        time = self.convert_to_time(self.convert_to_minute(time))
+        #print(f"Notiert wurde {time}")
         return time
 
 if __name__ == "__main__":
-    print(WorkTimeCaluclator().calc_work_flextime("7:20", "16:15"))
-    print(WorkTimeCaluclator().convert_to_time(150))
-    print(WorkTimeCaluclator().get_break_duration(REGULAR_BREAKFAST))
-    print(WorkTimeCaluclator().calc_working_hours(REGULAR_ARRIVAL_TIME, REGULAR_LEAVE_TIME, WorkTimeCaluclator().calc_break_time(REGULAR_BREAKFAST, REGULAR_LUNCHTIME)))
+    print("Du hast zeitrechner.py gestartet")

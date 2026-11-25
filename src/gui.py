@@ -9,6 +9,9 @@ class GUI:
     def __init__(self):
         self.calc = WorkTimeCaluclator()
         self.root = tk.Tk()
+        self.root.bind_all("<Button-1>", lambda event: event.widget.focus_set()
+              if not isinstance(event.widget, tk.Entry)
+              else None)
         self.root.title("Arbeitszeitrechner")
         self.root.resizable(False, False)
         make_corners_square(self.root)
@@ -17,13 +20,16 @@ class GUI:
         self.menu.add_command(label="Rechner", command=lambda: self.show_frame("calc"))
         self.menu.add_command(label="Options", command=lambda: self.show_frame("options"))
         self.menu.add_command(label="Übersicht", command=lambda: self.show_frame("overview"))
+        self.menu.add_command(label="   ", command=lambda: self.show_frame("secret"))
         self.frame1 = CalcFrame(master=self.root, worktime_calculator=self.calc)
         self.frame2 = OptionFrame(master=self.root, calc=self.calc)
         self.frame3 = OverviewFrame(master=self.root)
+        self.frame4 = SecretFrame(master=self.root)
         self.frames = {
             "calc": self.frame1, 
             "options": self.frame2, 
-            "overview": self.frame3
+            "overview": self.frame3,
+            "secret": self.frame4
             }
         self.currentframe = "calc"
 
@@ -123,7 +129,7 @@ class TimeEntry(tk.Entry):
         v_cmd = self.register(self.check_input_format)
         self.configure(validate="key", validatecommand=(v_cmd, "%P"))
 
-        self.placeholder = "Keine Eingabe"
+        self.placeholder = "Falsche Eingabe"
         self.placeholder_active = False
 
         self.bind("<FocusIn>", self.remove_placeholder)
@@ -184,7 +190,12 @@ class TimeEntry(tk.Entry):
                 return False
 
         return True #when all checks are passed allow the new string
-            
+
+    def insert_unvalidated(self, text:str):
+        self.configure(validate="none")
+        self.insert(0, text)
+        self.configure(validate="key")
+
 class DateEntry(tk.Entry):
     def __init__(self, master, **options):
         super().__init__(master, **options)
@@ -297,11 +308,25 @@ class OptionFrame(tk.Frame):
                 i+=1
 
     def save_options(self):
+        entries = []
+        even = True
         for widget in self.winfo_children():
             if isinstance(widget, TimeEntry):
-                if widget.get().strip() == "":
-                    self.empty_input_error(widget)
-        #breakfast = self.calc.convert_to_time(self.calc.convert_to_minute(self.breakfast_begin_entry.get().strip()))
+                entries.append(widget)
+        for index, widget in enumerate(entries):
+            if widget.get().strip() == "":
+                self.empty_input_error(widget)
+                return
+            try:
+                output = self.calc.round_up_to_multiple_of_five(widget.get().strip(), even)
+                widget.delete(0, tk.END)
+                widget.insert_unvalidated(output)
+            except IndexError:
+                self.empty_input_error(widget) 
+            if even:
+                even = False
+            else:
+                even = True
 
     def empty_input_error(self, entry):
         entry.delete(0, tk.END)
@@ -342,6 +367,38 @@ class OverviewFrame(tk.Frame):
     def reset(self, *args):
         pass
 
+class SecretFrame(tk.Frame):
+    def __init__(self, master ,**options):
+        super().__init__(master,**options)
+
+        self.canvas = tk.Canvas(master=self, bg="blue", height=300, width=300 )
+        self.canvas.grid(column=0, row=0)
+
+        self.canvas.bind("<Button-1>", self.start_drawing)
+        self.canvas.bind("<B1-Motion>", self.draw)
+        
+    def start_drawing(self, event):
+        self.canvas.old_x = event.x
+        self.canvas.old_y = event.y
+
+    def draw(self, event):
+        self.canvas.create_line(
+            self.canvas.old_x,
+            self.canvas.old_y,
+            event.x,
+            event.y,
+            width=3,
+            fill="black",
+            capstyle=tk.ROUND,
+            smooth=True
+        )
+
+        self.canvas.old_x = event.x
+        self.canvas.old_y = event.y
+
+    def reset(self):
+        self.canvas.delete("all")
+        
 # erstellt von mister GPT um die ecken eckig zu machen
 def make_corners_square(root):
     # Aktualisiert ausstehende Tkinter-Aufgaben, damit unter anderem
